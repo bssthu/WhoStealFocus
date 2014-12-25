@@ -1,0 +1,9 @@
+*.suo
+*.sdf
+*.opensdf
+/Debug/
+/Release/
+/whoStealFocus/Debug/
+/whoStealFocus/Release/
+/hookLostFocus/Debug/
+/hookLostFocus/Release/

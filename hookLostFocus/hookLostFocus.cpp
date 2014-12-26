@@ -8,12 +8,14 @@
 // Description		: 
 // 
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <Windows.h>
 #include <time.h>
 
 static const int LEN = 2048;
 HHOOK g_hookLF = nullptr;
+static char g_logPath[1024] = "hook.log";
 
 // È¡Ê±¼ä×Ö·û´®
 void FormatTimeString(char* timeStr)
@@ -40,24 +42,32 @@ LRESULT CALLBACK HookProcLF(int nCode, WPARAM wParam, LPARAM lParam)
             GetClassName((HWND)pcwp->wParam, classNameWP, LEN);
         }
         FILE* fp = fopen("R:\\hook.log", "at+");
-        if (pcwp->message == WM_KILLFOCUS)
+        if (fp != nullptr)
         {
-            fprintf(fp, "%s %s -> %s\n", timeStr, className, classNameWP);
+            if (pcwp->message == WM_KILLFOCUS)
+            {
+                fprintf(fp, "%s %s -> %s\n", timeStr, className, classNameWP);
+            }
+            else if (pcwp->message == WM_SETFOCUS)
+            {
+                fprintf(fp, "%s %s <- %s\n", timeStr, className, classNameWP);
+            }
+            fclose(fp);
         }
-        else if (pcwp->message == WM_SETFOCUS)
-        {
-            fprintf(fp, "%s %s <- %s\n", timeStr, className, classNameWP);
-        }
-        fclose(fp);
     }
 
     return CallNextHookEx(g_hookLF, nCode, wParam, lParam);
 }
 
-extern "C" void __declspec(dllexport) __stdcall SetHook(HWND /*hwnd*/)
+extern "C" void __declspec(dllexport) __stdcall SetHook(HWND /*hwnd*/, const char* logPath)
 {
     g_hookLF = SetWindowsHookEx(WH_CALLWNDPROC, HookProcLF, GetModuleHandle("HookLostFocus"), 0);
-    FILE* fp = fopen("R:\\hook.log", "at+");
-    fprintf(fp, "init\n");
-    fclose(fp);
+
+    strcpy(g_logPath, logPath);
+    FILE* fp = fopen(g_logPath, "at+");
+    if (fp != nullptr)
+    {
+        fprintf(fp, "init\n");
+        fclose(fp);
+    }
 }

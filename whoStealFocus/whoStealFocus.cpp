@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <Windows.h>
 #include <TlHelp32.h>
+#include "settings.h"
 
 #pragma comment(lib, "hookLostFocus.lib")
 
@@ -21,7 +22,7 @@ typedef struct WindowInfoEnum
     HWND hWnd;
 } *lpWindowInfoEnum;
 
-extern "C" void __declspec(dllimport) __stdcall SetHook(HWND hwnd);
+extern "C" void __declspec(dllimport) __stdcall SetHook(HWND hwnd, const char* logPath);
 HWND GetHWNDByExeFileName(char* exeFileName);
 BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam);
 
@@ -91,9 +92,11 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam)
 int main()
 {
     printf("Press Ctrl-C to quit.\n");
+    Settings settings = {};
+    LoadSettings("settings.ini", &settings);
 
-    HWND hTarget = GetHWNDByExeFileName("whoStealFocus.exe");
-    SetHook(hTarget);
+    HWND hTarget = GetHWNDByExeFileName(settings.targetName);
+    SetHook(hTarget, settings.logPath);
 
     while ('q' != getchar())
     {

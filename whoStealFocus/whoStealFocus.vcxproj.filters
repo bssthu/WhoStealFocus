@@ -18,5 +18,13 @@
     <ClCompile Include="whoStealFocus.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="settings.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="settings.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
